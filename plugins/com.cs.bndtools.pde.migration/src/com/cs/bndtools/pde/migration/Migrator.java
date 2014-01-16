@@ -31,8 +31,6 @@ import org.eclipse.jdt.core.IPackageFragment;
 import org.eclipse.jdt.core.IPackageFragmentRoot;
 import org.eclipse.jdt.core.JavaCore;
 import org.eclipse.jdt.core.JavaModelException;
-import org.eclipse.jface.text.Document;
-import org.eclipse.jface.text.IDocument;
 import org.eclipse.osgi.service.resolver.BundleDescription;
 import org.eclipse.osgi.service.resolver.ExportPackageDescription;
 import org.eclipse.pde.core.plugin.IPlugin;
@@ -44,9 +42,13 @@ import org.eclipse.pde.internal.core.PluginModelManager;
 import org.osgi.framework.Constants;
 import org.osgi.framework.Version;
 
-import bndtools.editor.model.BndEditModel;
-import bndtools.model.clauses.ExportedPackage;
-import bndtools.model.clauses.VersionedClause;
+import aQute.bnd.build.model.BndEditModel;
+import aQute.bnd.build.model.clauses.ExportedPackage;
+import aQute.bnd.build.model.clauses.VersionedClause;
+import aQute.bnd.header.Attrs;
+import aQute.bnd.properties.Document;
+import aQute.bnd.properties.IDocument;
+
 
 public class Migrator {
 
@@ -202,7 +204,7 @@ public class Migrator {
 		}
 
 		private void addOSGiCoreToBuildPath() {
-			VersionedClause osgiCore = new VersionedClause("osgi.core", new HashMap<String, String>(0));
+			VersionedClause osgiCore = new VersionedClause("osgi.core", new Attrs());
 			List<VersionedClause> buildPath = bndEditModel.getBuildPath();
 			if (buildPath == null) {
 				buildPath = new ArrayList<VersionedClause>();
@@ -376,14 +378,14 @@ public class Migrator {
 		}
 	}
 
-	private static Map<String, String> getAttribs(ExportPackageDescription pkg) {
+	private static Attrs getAttribs(ExportPackageDescription pkg) {
 		Version v = pkg.getVersion();
 		if (v != null && !Version.emptyVersion.equals(v)) {
-			HashMap<String, String> result = new HashMap<String, String>(1);
+			Attrs result = new Attrs();
 			result.put(Constants.VERSION_ATTRIBUTE, v.toString());
 			return result;
 		}
-		return Collections.emptyMap();
+		return new Attrs();
 	}
 
 	/**
